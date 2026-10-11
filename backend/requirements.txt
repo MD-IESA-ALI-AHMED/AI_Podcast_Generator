@@ -1,0 +1,7 @@
+fastapi>=0.115,<1
+google-genai>=1.0,<2
+pydub>=0.25,<1
+audioop-lts; python_version >= "3.13"
+python-dotenv>=1.0,<2
+requests>=2.32,<3
+uvicorn[standard]>=0.30,<1
