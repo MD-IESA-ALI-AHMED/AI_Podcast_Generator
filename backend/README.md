@@ -19,7 +19,9 @@ python -m venv .venv
 
 If `.env` does not exist, copy `.env.example` to `.env`, then add your
 `GEMINI_API_KEY`. The supplied Sarvam key is in this workspace's local `.env`,
-which is ignored by Git. Optionally, place an MP3 named
+which is ignored by Git. `ALLOWED_ORIGINS` is a comma-separated list of
+frontend origins allowed to call the API; by default it allows both localhost
+development URLs shown in `.env.example`. Optionally, place an MP3 named
 `background_music.mp3` in this directory or set `BACKGROUND_MUSIC_PATH` in
 `.env`.
 

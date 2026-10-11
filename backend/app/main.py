@@ -27,6 +27,14 @@ logger = logging.getLogger("svara")
 SARVAM_API_URL = "https://api.sarvam.ai/text-to-speech"
 SARVAM_MODEL = "bulbul:v4-flash"
 MAX_SCRIPT_LINES = 16
+ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv(
+        "ALLOWED_ORIGINS",
+        "http://localhost:3000,http://127.0.0.1:3000",
+    ).split(",")
+    if origin.strip()
+]
 
 LANGUAGES = {
     "en-IN": ("English", ("simran_en_conversation", "shubh_en_narration")),
@@ -67,7 +75,7 @@ class PodcastLine(BaseModel):
 app = FastAPI(title="Svara Podcast API")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
 )
