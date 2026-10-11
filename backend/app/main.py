@@ -96,7 +96,7 @@ def create_script(source_text: str, language_code: str) -> list[PodcastLine]:
     try:
         client = genai.Client(api_key=api_key)
         response = client.models.generate_content(
-            model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
+            model=os.getenv("GEMINI_MODEL", "gemini-3.8-flash"),
             contents=prompt,
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",

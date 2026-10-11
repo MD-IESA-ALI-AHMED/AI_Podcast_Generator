@@ -1,12 +1,21 @@
+import os
 import tempfile
 import unittest
+from types import SimpleNamespace
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from pydub import AudioSegment
 from pydantic import ValidationError
 
-from app.main import LANGUAGES, GenerateRequest, PodcastLine, health, mix_episode
+from app.main import (
+    LANGUAGES,
+    GenerateRequest,
+    PodcastLine,
+    create_script,
+    health,
+    mix_episode,
+)
 
 
 class PodcastBackendTests(unittest.TestCase):
@@ -19,6 +28,25 @@ class PodcastBackendTests(unittest.TestCase):
                 {"text": "A podcast topic", "language_code": "ur-IN"}
             )
 
+    def test_script_generation_uses_available_gemini_model(self) -> None:
+        generated_text = (
+            '[{"speaker":"Host 1","text":"Hello","language_code":"en-IN"},'
+            '{"speaker":"Host 2","text":"Welcome","language_code":"en-IN"}]'
+        )
+        generate_content = MagicMock(return_value=SimpleNamespace(text=generated_text))
+        client = SimpleNamespace(
+            models=SimpleNamespace(generate_content=generate_content)
+        )
+        with patch.dict("os.environ", {"GEMINI_API_KEY": "test-key"}, clear=False):
+            with patch("app.main.genai.Client", return_value=client):
+                os.environ.pop("GEMINI_MODEL", None)
+                lines = create_script("A podcast topic", "en-IN")
+
+        self.assertEqual(len(lines), 2)
+        self.assertEqual(
+            generate_content.call_args.kwargs["model"],
+            "gemini-3.8-flash",
+        )
     def test_languages_have_two_v4_voices(self) -> None:
         self.assertEqual(len(LANGUAGES), 9)
         for language_code, (_, speakers) in LANGUAGES.items():
